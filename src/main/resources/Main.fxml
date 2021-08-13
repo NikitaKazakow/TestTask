@@ -2,23 +2,23 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<GridPane prefHeight="450" prefWidth="800" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="Controller">
+
+<GridPane prefHeight="450" prefWidth="900" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Controller">
     <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES"/>
+        <ColumnConstraints hgrow="SOMETIMES" />
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints vgrow="ALWAYS" prefHeight="50"/>
-        <RowConstraints vgrow="SOMETIMES"/>
+        <RowConstraints prefHeight="50" vgrow="ALWAYS" />
+        <RowConstraints vgrow="SOMETIMES" />
     </rowConstraints>
     <HBox GridPane.rowIndex="0">
-        <TextField fx:id="url" GridPane.columnIndex="0"/>
-        <Button onAction="#getStatistics">Получить статистику</Button>
+        <TextField fx:id="urlTextField" prefHeight="25.0" prefWidth="669.0" GridPane.columnIndex="0" />
+        <Button fx:id="getStatisticButton" onAction="#getStatistics">Получить статистику</Button>
     </HBox>
     <TableView fx:id="table" GridPane.rowIndex="1">
         <columns>
-            <TableColumn text="Слово"/>
-            <TableColumn text="Количество"/>
+            <TableColumn text="Слово" />
+            <TableColumn text="Количество" />
         </columns>
     </TableView>
 </GridPane>
