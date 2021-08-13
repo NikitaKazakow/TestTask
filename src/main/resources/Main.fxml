@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane prefHeight="450" prefWidth="800" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="Controller">
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints vgrow="ALWAYS" prefHeight="50"/>
+        <RowConstraints vgrow="SOMETIMES"/>
+    </rowConstraints>
+    <HBox GridPane.rowIndex="0">
+        <TextField fx:id="url" GridPane.columnIndex="0"/>
+        <Button onAction="#getStatistics">Получить статистику</Button>
+    </HBox>
+    <TableView fx:id="table" GridPane.rowIndex="1">
+        <columns>
+            <TableColumn text="Слово"/>
+            <TableColumn text="Количество"/>
+        </columns>
+    </TableView>
+</GridPane>
