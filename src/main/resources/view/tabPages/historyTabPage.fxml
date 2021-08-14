@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.control.ListView?>
+<GridPane prefHeight="450" prefWidth="900" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HistoryController">
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" percentWidth="30"/>
+        <ColumnConstraints hgrow="SOMETIMES" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints prefHeight="50" vgrow="ALWAYS" />
+    </rowConstraints>
+    <ListView fx:id="statisticListView"/>
+</GridPane>

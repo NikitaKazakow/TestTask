@@ -1,133 +1,105 @@
 package model;
 
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.DaoManager;
-import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
-import com.j256.ormlite.table.TableUtils;
-import db.entity.Record;
-import db.entity.Statistic;
+import db.Record;
+import db.Statistic;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
+import javafx.concurrent.Worker;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.SneakyThrows;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import model.service.BaseService;
+import model.service.GetStatisticHistoryService;
+import model.service.GetStatisticService;
+import model.service.SaveDbService;
 
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Properties;
 
 @Getter
 public class Model {
 
-    private final String regex = "[ ,.!?\";:\\[\\]()\n\r\t\\-'/]";
+    private static volatile Model instance;
 
     private final ObservableList<Record> statistic;
 
-    private final GetStatisticService getStatisticService;
+    private final ObservableList<Statistic> history;
 
-    private final SaveDbService saveDbService;
+    private SaveDbService saveDbService;
+    private GetStatisticService getStatisticService;
+    private GetStatisticHistoryService historyService;
 
-    @SneakyThrows
-    public Model() {
+    private Model() {
+
         statistic = FXCollections.observableArrayList();
+        history = FXCollections.observableArrayList();
 
-        getStatisticService = new GetStatisticService();
+        Properties properties = new Properties();
+        try (FileInputStream fileInputStream = new FileInputStream("src/main/resources/config.properties")) {
+            properties.load(fileInputStream);
 
-        saveDbService = new SaveDbService();
+            String dbPath = properties.getProperty("db.path");
+            String dbUsername = properties.getProperty("db.username");
+            String dbPassword = properties.getProperty("db.password");
 
-    }
+            historyService = new GetStatisticHistoryService(dbPath, dbUsername, dbPassword);
+            saveDbService = new SaveDbService(dbPath, dbUsername, dbPassword);
+            getStatisticService = new GetStatisticService();
 
-    public synchronized void getHtmlStatistic(String url) {
-        BaseService.url = url;
-        getStatisticService.start();
-    }
+            getStatisticService.setOnSucceeded(
+                    e -> {
 
-    @Setter
-    private abstract static class BaseService extends Service<Void> {
-        protected static String url;
-    }
+                        statistic.clear();
+                        statistic.addAll(getStatisticService.getValue());
 
-    @Setter
-    private class GetStatisticService extends BaseService {
-
-        @Override
-        protected Task<Void> createTask() {
-            return new Task<Void>() {
-                @Override
-                protected Void call() {
-                    statistic.clear();
-                    Map<String, Integer> statisticMap = new HashMap<>();
-                    try {
-                        Document document = Jsoup.connect(url).get();
-                        String htmlText = document.body().text();
-                        String[] words = htmlText.split(regex);
-                        for (String word : words) {
-                            if (statisticMap.containsKey(word)) {
-                                int count = statisticMap.get(word);
-                                statisticMap.replace(word, count, count + 1);
-                            } else {
-                                statisticMap.put(word, 1);
-                            }
+                        saveDbService.setStatistic(statistic);
+                        if (saveDbService.getState() == Worker.State.READY) {
+                            saveDbService.start();
+                        } else {
+                            saveDbService.restart();
                         }
-                        statistic.addAll(statisticMap.entrySet().stream().map(stringIntegerEntry ->
-                                new Record(stringIntegerEntry.getKey(),
-                                        stringIntegerEntry.getValue())).collect(Collectors.toList()));
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
-                    return null;
-                }
-            };
-        }
+            );
 
-        @Override
-        protected void succeeded() {
-            saveDbService.start();
+            historyService.setOnSucceeded(
+                    e -> {
+                        history.clear();
+                        history.addAll(historyService.getValue());
+                    }
+            );
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    @Setter
-    private class SaveDbService extends BaseService {
-
-        private final JdbcPooledConnectionSource connectionSource;
-
-        private final Dao<Statistic, Long> statisticDao;
-
-        @SneakyThrows
-        SaveDbService() {
-            connectionSource = new JdbcPooledConnectionSource("jdbc:h2:mem:statistic");
-            statisticDao = DaoManager.createDao(connectionSource, Statistic.class);
+    public static Model getInstance() {
+        Model model = instance;
+        if (model != null) {
+            return model;
         }
+        synchronized (Model.class) {
+            if (instance == null) {
+                instance = new Model();
+            }
+            return instance;
+        }
+    }
 
-        @Override
-        protected Task<Void> createTask() {
-            return new Task<Void>() {
-                @Override
-                protected Void call() {
-                    try {
+    public void getHtmlStatistic(String url) {
+        BaseService.setUrl(url);
+        if (getStatisticService.getState() == Worker.State.READY) {
+            getStatisticService.start();
+        } else {
+            getStatisticService.restart();
 
-                        TableUtils.createTableIfNotExists(connectionSource, Statistic.class);
-                        TableUtils.createTableIfNotExists(connectionSource, Record.class);
+        }
+    }
 
-                        Statistic dbStatistic = new Statistic();
-                        dbStatistic.setUrl(url);
-
-                        statisticDao.create(dbStatistic);
-                        statisticDao.refresh(dbStatistic);
-
-                        dbStatistic.getRecords().addAll(statistic);
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
-                    }
-                    return null;
-                }
-            };
+    public void getStatisticHistory() {
+        if (historyService.getState() == Worker.State.READY) {
+            historyService.start();
+        } else {
+            historyService.restart();
         }
     }
 }

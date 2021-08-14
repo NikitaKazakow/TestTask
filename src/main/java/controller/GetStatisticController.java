@@ -1,6 +1,6 @@
 package controller;
 
-import db.entity.Record;
+import db.Record;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -14,7 +14,7 @@ import org.apache.commons.validator.routines.UrlValidator;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class Controller implements Initializable {
+public class GetStatisticController implements Initializable {
 
     private Model model;
 
@@ -36,7 +36,7 @@ public class Controller implements Initializable {
 
     public void initialize(URL location, ResourceBundle resources) {
         urlValidator = new UrlValidator(new String[]{"http", "https"});
-        model = new Model();
+        model = Model.getInstance();
 
         table.setItems(model.getStatistic());
 

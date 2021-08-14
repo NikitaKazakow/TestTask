@@ -1,4 +1,4 @@
-package db.entity;
+package db;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
