@@ -1,14 +1,16 @@
-package model.service;
+package service.impl;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.table.TableUtils;
-import db.Record;
-import db.Statistic;
+import db.DbConnectionManager;
+import db.entity.RecordEntity;
+import db.entity.StatisticEntity;
 import javafx.concurrent.Task;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import service.BaseService;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -16,16 +18,13 @@ import java.util.List;
 public class SaveDbService extends BaseService<Void> {
 
     @Setter
-    private List<Record> statistic;
+    private List<RecordEntity> statistic;
 
     private final JdbcPooledConnectionSource connectionSource;
 
-    private final Dao<Statistic, Long> statisticDao;
-
     @SneakyThrows
-    public SaveDbService(String path, String username, String password) {
-        connectionSource = new JdbcPooledConnectionSource(path, username, password);
-        statisticDao = DaoManager.createDao(connectionSource, Statistic.class);
+    public SaveDbService() {
+        connectionSource = DbConnectionManager.getConnection();
     }
 
     @Override
@@ -35,12 +34,13 @@ public class SaveDbService extends BaseService<Void> {
             protected Void call() {
                 try {
 
-                    TableUtils.createTableIfNotExists(connectionSource, Statistic.class);
-                    TableUtils.createTableIfNotExists(connectionSource, Record.class);
+                    TableUtils.createTableIfNotExists(connectionSource, StatisticEntity.class);
+                    TableUtils.createTableIfNotExists(connectionSource, RecordEntity.class);
 
-                    Statistic dbStatistic = new Statistic();
+                    StatisticEntity dbStatistic = new StatisticEntity();
                     dbStatistic.setUrl(url);
 
+                    Dao<StatisticEntity, Long> statisticDao = DaoManager.createDao(connectionSource, StatisticEntity.class);
                     statisticDao.create(dbStatistic);
                     statisticDao.refresh(dbStatistic);
 

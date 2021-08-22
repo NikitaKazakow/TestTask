@@ -1,4 +1,4 @@
-package model.service;
+package service;
 
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;

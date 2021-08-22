@@ -1,16 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.control.ListView?>
-<GridPane prefHeight="450" prefWidth="900" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HistoryController">
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane prefHeight="450" prefWidth="900" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.impl.tabs.HistoryTabController">
     <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" percentWidth="30"/>
+        <ColumnConstraints hgrow="NEVER" percentWidth="30" />
         <ColumnConstraints hgrow="SOMETIMES" />
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints prefHeight="50" vgrow="ALWAYS" />
+        <RowConstraints vgrow="ALWAYS" />
+        <RowConstraints vgrow="SOMETIMES" />
     </rowConstraints>
-    <ListView fx:id="statisticListView"/>
+    <VBox GridPane.columnIndex="0" GridPane.rowSpan="2">
+        <ListView fx:id="statisticListView" prefHeight="425.0" prefWidth="270.0" />
+        <Button maxWidth="Infinity" onAction="#clearHistory" text="Очистить историю"/>
+    </VBox>
+    <TableView fx:id="table" GridPane.columnIndex="1" GridPane.rowSpan="2">
+        <columns>
+            <TableColumn text="Слово" />
+            <TableColumn text="Количество" />
+        </columns>
+    </TableView>
 </GridPane>

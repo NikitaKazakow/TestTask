@@ -2,9 +2,9 @@
 
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<TabPane fx:id="tabPane" fx:controller="controller.MainController" xmlns="http://javafx.com/javafx/8.0.40"
+<TabPane fx:id="tabPane" fx:controller="controller.impl.MainController" xmlns="http://javafx.com/javafx/8.0.40"
          xmlns:fx="http://www.w3.org/2001/XInclude">
-    <Tab fx:id="getStatisticTab" text="Получить статистику">
+    <Tab fx:id="statisticTab" text="Получить статистику">
         <fx:include fx:id="getStatisticTabPage" source="tabPages/getStatisticTabPage.fxml"/>
     </Tab>
     <Tab fx:id="historyTab" text="История">

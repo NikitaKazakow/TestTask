@@ -1,4 +1,4 @@
-package db;
+package db.entity;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 @NoArgsConstructor
 @RequiredArgsConstructor
 @DatabaseTable(tableName = "record")
-public class Record {
+public class RecordEntity {
 
     @DatabaseField(generatedId = true)
     private long id;
@@ -25,6 +25,10 @@ public class Record {
     @DatabaseField
     private long count;
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true)
-    private Statistic statistic;
+    @DatabaseField(
+            foreign = true,
+            foreignAutoRefresh = true,
+            foreignAutoCreate = true,
+            columnDefinition = "INTEGER CONSTRAINT STATISTIC_FK REFERENCES statistic(id) ON DELETE CASCADE")
+    private StatisticEntity statistic;
 }

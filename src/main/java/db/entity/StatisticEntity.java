@@ -1,4 +1,4 @@
-package db;
+package db.entity;
 
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
@@ -12,7 +12,7 @@ import java.util.Date;
 
 @NoArgsConstructor
 @DatabaseTable(tableName = "statistic")
-public class Statistic {
+public class StatisticEntity {
     @DatabaseField(generatedId = true)
     private long id;
 
@@ -28,5 +28,5 @@ public class Statistic {
     @Getter
     @Setter
     @ForeignCollectionField(eager = true)
-    private ForeignCollection<Record> records;
+    private ForeignCollection<RecordEntity> records;
 }

@@ -1,9 +1,10 @@
-package model.service;
+package service.impl;
 
-import db.Record;
+import db.entity.RecordEntity;
 import javafx.concurrent.Task;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import service.BaseService;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -11,15 +12,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class GetStatisticService extends BaseService<List<Record>> {
+public class HttpRequestService extends BaseService<List<RecordEntity>> {
 
     private final String regex = "[ ,.!?\";:\\[\\]()\n\r\t\\-'/]";
 
     @Override
-    protected Task<List<Record>> createTask() {
-        return new Task<List<Record>>() {
+    protected Task<List<RecordEntity>> createTask() {
+        return new Task<List<RecordEntity>>() {
             @Override
-            protected List<Record> call() {
+            protected List<RecordEntity> call() {
                 Map<String, Integer> statisticMap = new HashMap<>();
                 try {
                     Document document = Jsoup.connect(url).get();
@@ -34,10 +35,11 @@ public class GetStatisticService extends BaseService<List<Record>> {
                         }
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    e.printStackTrace();                  
+
                 }
                 return statisticMap.entrySet().stream().map(stringIntegerEntry ->
-                        new Record(stringIntegerEntry.getKey(),
+                        new RecordEntity(stringIntegerEntry.getKey(),
                                 stringIntegerEntry.getValue())).collect(Collectors.toList());
             }
         };
